@@ -22,12 +22,12 @@ import retrofit2.Callback
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val adapter = ProductAdapter()
-    var dataList = ArrayList<ProductModel>()
+    private val adapterSearch = SearchListAdapter()
+    private val adapterCategory = CategoryListAdapter()
     var dataListSearch = ArrayList<ProductModel>()
     var apiCLient = ApiClient()
     var currentSkip = 0
     var totalData = 0
-    var oldCount = 0
     var categorylist: Any? = null
 
 
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private fun initView() {
         binding.rcViewProduct.setHasFixedSize(true)
         binding.rcViewProduct.layoutManager = GridLayoutManager(this,2)
-        binding.rcViewProduct.adapter = adapter
+
         binding.rcViewProduct.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -94,11 +94,11 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val responseModel = response.body()
                     if (responseModel != null) {
-                        oldCount = dataList.size
+                        val dataList = responseModel.products
+                        val oldCount = dataList.size
                         totalData = responseModel.total
-                        dataList = responseModel.products
                         adapter.setListData(dataList, oldCount, dataList.size)
-
+                        binding.rcViewProduct.adapter = adapter
                     }
                 }
                 loading()
@@ -120,10 +120,10 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val responseModel = response.body()
                     if (responseModel != null) {
-                        oldCount = dataListSearch.size
+                        val oldCount = dataListSearch.size
                         totalData = responseModel.total
-                        adapter.setListData(responseModel.products, oldCount, responseModel.products.size)
-
+                        adapterSearch.setSearchData(responseModel.products, oldCount, responseModel.products.size)
+                        binding.rcViewProduct.adapter = adapterSearch
                     }
                 }
                 loading()
@@ -133,7 +133,6 @@ class MainActivity : AppCompatActivity() {
                 t.printStackTrace()
                 Toast.makeText(this@MainActivity, "response: Server Problem", Toast.LENGTH_SHORT).show()
                 loading()
-                Log.e("onResponse: ", "${t}")
             }
         })
     }
@@ -202,11 +201,11 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val responseModel = response.body()
                     if (responseModel != null) {
-                        oldCount = dataListSearch.size
+                        val oldCount = dataListSearch.size
                         totalData = responseModel.total
-                        dataList.clear()
-                        dataList = responseModel.products
-                        adapter.setListData(dataList, oldCount, dataList.size)
+                        val dataList = responseModel.products
+                        adapterCategory.setCategoryList(dataList, oldCount, dataList.size)
+                        binding.rcViewProduct.adapter = adapterCategory
                     }
                 }
                 loading()

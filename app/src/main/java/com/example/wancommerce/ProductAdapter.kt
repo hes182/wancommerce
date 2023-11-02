@@ -13,7 +13,7 @@ import com.example.wancommerce.databinding.ListProductitemBinding
 import retrofit2.Response
 import java.util.Locale
 
-class ProductAdapter() : RecyclerView.Adapter<ProductAdapter.ViewModel>(), Filterable {
+class ProductAdapter : RecyclerView.Adapter<ProductAdapter.ViewModel>(), Filterable {
     private var dataList = ArrayList<ProductModel>()
     private var searchDataLis = ArrayList<ProductModel>()
 
